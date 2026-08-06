@@ -356,11 +356,11 @@ elif page == "Machine Learning":
     random_state=42
 )
 
-model.fit(X_train, y_train)
+    model.fit(X_train, y_train)
 
-y_pred = model.predict(X_test)
+    y_pred = model.predict(X_test)
 
-accuracy = accuracy_score(y_test, y_pred)
+    accuracy = accuracy_score(y_test, y_pred)
 
     st.success(f"Model Accuracy: {accuracy:.2%}")
 
@@ -441,7 +441,7 @@ accuracy = accuracy_score(y_test, y_pred)
         random_state=42
     )
     X = X.apply(pd.to_numeric, errors="coerce")
-X = X.fillna(0)
+    X = X.fillna(0)
 
     model.fit(X_train, y_train)
 
