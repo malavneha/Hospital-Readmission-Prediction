@@ -148,6 +148,13 @@ streamlit run app.py
 ```
 
 ---
+# 📄 Research Paper
+
+A detailed research paper describing the methodology, data preprocessing, exploratory data analysis, machine learning model, results, and conclusions is available in the `research` folder.
+
+**Research Paper:**
+- 📘 Hospital_Readmission_Research_Paper.pdf
+- 📝 Hospital_Readmission_Research_Paper.docx
 
 ## 📊 Results
 
