@@ -591,4 +591,4 @@ https://github.com/malavneha
 """)
 
     st.success("Thank you for exploring this project!")
-            "Estimated
+            "Estimated"
