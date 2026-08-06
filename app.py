@@ -544,7 +544,10 @@ elif page == "Prediction":
         else:
             st.success("🟢 Low Risk of Readmission")
 
-        st.metric(
+        st.metric(label="Estimated Readmission Risk",
+    value=f"{probability:.1%}",
+    delta="High Risk" if probability > 0.5 else "Low Risk"
+                 )
             # ==========================================================
 # ABOUT PAGE
 # ==========================================================
