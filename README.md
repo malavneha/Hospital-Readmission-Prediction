@@ -5,7 +5,10 @@
 Hospital readmissions are a major challenge for healthcare providers, leading to increased healthcare costs and reduced quality of patient care. This project analyzes patient medical records to identify factors influencing hospital readmissions and builds a machine learning model to predict whether a patient is likely to be readmitted.
 
 The project includes data preprocessing, exploratory data analysis (EDA), feature engineering, predictive modeling, model evaluation, and an interactive Streamlit dashboard for real-time predictions.
+##🔗 live demo 
+https://hospital-readmission-prediction-fczihjgbagbex2f4afjfme.streamlit.app/
 
+https://github.com/malavneha/hospital-readmission-prediction/blob/main/app.py
 ---
 
 ## 🎯 Objectives
