@@ -520,7 +520,7 @@ elif page == "Prediction":
             2
         )
 
-if st.button("🔮 Predict Readmission Risk"):
+    if st.button("🔮 Predict Readmission Risk"):
     risk_score = (
         age * 0.15 +
         time_in_hospital * 4 +
