@@ -357,6 +357,8 @@ elif page == "Machine Learning":
         n_estimators=100,
         random_state=42
     )
+    X = X.apply(pd.to_numeric, errors="coerce")
+X = X.fillna(0)
 
     model.fit(X_train, y_train)
 
