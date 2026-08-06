@@ -1,2 +1,2 @@
-# Hospital-Readmission-Prediction
-Machine Learning project to predict 30-day hospital readmission risk using Python, Scikit-learn, Streamlit, and healthcare data.
+
+AI-powered Hospital Readmission Prediction Dashboard built with Python, Scikit-learn, Streamlit, and Healthcare Analytics.
