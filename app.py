@@ -319,16 +319,16 @@ elif page == "EDA":
         kind="bar",
         ax=ax
     )
-
     st.pyplot(fig)
- 
 
 # ==========================================================
 # MACHINE LEARNING PAGE
 # ==========================================================
 
-    elif page == "Machine Learning":
+elif page == "Machine Learning":
 
+
+    
     st.header("🤖 Machine Learning")
 
     st.write("Training Random Forest Classifier...")
