@@ -91,20 +91,18 @@ for col in drop_cols:
 # Fill missing values
 
 for col in data.columns:
-
-    if data[col].dtype == "object":
-
-        data[col].fillna(
-            data[col].mode()[0],
-            inplace=True
-        )
-
+    if pd.api.types.is_numeric_dtype(data[col]):
+        data[col] = data[col].fillna(data[col].median())
     else:
+        mode = data[col].mode()
+        if not mode.empty:
+            data[col] = data[col].fillna(mode[0])
+        else:
+            data[col] = data[col].fillna("Unknown")
 
-        data[col].fillna(
-            data[col].median(),
-            inplace=True
-        )
+    
+
+    
 
 # Encode target
 
