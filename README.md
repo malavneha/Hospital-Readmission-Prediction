@@ -12,6 +12,9 @@ https://hospital-readmission-prediction-fczihjgbagbex2f4afjfme.streamlit.app/
 🔗📳https://github.com/malavneha/hospital-readmission-prediction/blob/main/app.py
 ---
 
+🔗👩‍🎓linkdin
+https://www.linkedin.com/in/dr-neha-malav-743a25332?utm_source=share_via&utm_content=profile&utm_medium=member_android
+
 ## 🎯 Objectives
 
 - Analyze patient demographics and clinical characteristics.
