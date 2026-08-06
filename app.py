@@ -524,18 +524,32 @@ elif page == "Prediction":
 
     if st.button("🔮 Predict Readmission Risk"):
 
-        risk_score = (
-            age * 0.15 +
-            time_in_hospital * 4 +
-            medications * 0.6 +
-            diagnoses * 2 +
-            emergency * 5 +
-            inpatient * 5 +
-            outpatient * 2 +
-            num_lab * 0.05
-        )
+        # Create input with same columns as training data
+input_data = pd.DataFrame(0, index=[0], columns=X.columns)
 
-        probability = min(risk_score / 100, 1.0)
+# Fill available features
+if "time_in_hospital" in input_data.columns:
+    input_data["time_in_hospital"] = time_in_hospital
+
+if "num_lab_procedures" in input_data.columns:
+    input_data["num_lab_procedures"] = num_lab
+
+if "num_medications" in input_data.columns:
+    input_data["num_medications"] = medications
+
+if "number_diagnoses" in input_data.columns:
+    input_data["number_diagnoses"] = diagnoses
+
+if "number_emergency" in input_data.columns:
+    input_data["number_emergency"] = emergency
+
+if "number_inpatient" in input_data.columns:
+    input_data["number_inpatient"] = inpatient
+
+if "number_outpatient" in input_data.columns:
+    input_data["number_outpatient"] = outpatient
+
+probability = model.predict_proba(input_data)[0][1]
 
         if probability >= 0.60:
             st.error("🔴 High Risk of Readmission")
