@@ -25,9 +25,7 @@ import streamlit as st
 
 @st.cache_data
 def load_data():
-    return pd.read_csv(
-        "https://raw.githubusercontent.com/malavneha/Hospital-Readmission-Prediction/main/diabetic_data.csv"
-    )
+    return pd.read_csv("diabetic_data.csv")
 
 df = load_data()
 
