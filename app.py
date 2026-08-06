@@ -20,3 +20,28 @@ Predict the risk of patient hospital readmission using healthcare data.
 - 🤖 Machine Learning Prediction
 - 📉 Visual Analytics
 """)
+uploaded_file = st.file_uploader(
+    "Upload Hospital Dataset",
+    type=["csv"]
+)
+
+if uploaded_file:
+
+    df = pd.read_csv(uploaded_file)
+
+    st.success("Dataset uploaded successfully!")
+
+    st.subheader("Dataset Preview")
+
+    st.dataframe(df.head())
+    st.subheader("Dataset Shape")
+
+    col1, col2 = st.columns(2)
+
+    col1.metric("Rows", df.shape[0])
+
+    col2.metric("Columns", df.shape[1])
+
+    st.subheader("Missing Values")
+
+    st.write(df.isnull().sum())
