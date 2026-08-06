@@ -519,33 +519,32 @@ elif page == "Prediction":
             20,
             2
         )
-
     if st.button("🔮 Predict Readmission Risk"):
-    risk_score = (
-        age * 0.15 +
-        time_in_hospital * 4 +
-        medications * 0.6 +
-        diagnoses * 2 +
-        emergency * 5 +
-        inpatient * 5 +
-        outpatient * 2 +
-        num_lab * 0.05
-    )
+        risk_score = (
+            age * 0.15 +
+            time_in_hospital * 4 +
+            medications * 0.6 +
+            diagnoses * 2 +
+            emergency * 5 +
+            inpatient * 5 +
+            outpatient * 2 +
+            num_lab * 0.05
+        )
 
-    probability = min(risk_score / 100, 1.0)
+        probability = min(risk_score / 100, 1.0)
 
-    if probability >= 0.60:
-        st.error("🔴 High Risk of Readmission")
-    elif probability >= 0.35:
-        st.warning("🟠 Moderate Risk of Readmission")
-    else:
-        st.success("🟢 Low Risk of Readmission")
+        if probability >= 0.60:
+            st.error("🔴 High Risk of Readmission")
+        elif probability >= 0.35:
+            st.warning("🟠 Moderate Risk of Readmission")
+        else:
+            st.success("🟢 Low Risk of Readmission")
 
-    st.metric(
-        "Estimated Readmission Risk",
-        f"{probability:.1%}",
-        "High Risk" if probability > 0.5 else "Low Risk"
-    )
+        st.metric(
+            "Estimated Readmission Risk",
+            f"{probability:.1%}",
+            "High Risk" if probability > 0.5 else "Low Risk"
+        )
 
 
 
