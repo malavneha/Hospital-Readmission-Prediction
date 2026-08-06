@@ -321,7 +321,9 @@ elif page == "EDA":
     )
 
     st.pyplot(fig)
-    # ==========================================================
+ 
+
+# ==========================================================
 # MACHINE LEARNING PAGE
 # ==========================================================
 
@@ -331,23 +333,106 @@ elif page == "Machine Learning":
 
     st.write("Training Random Forest Classifier...")
 
-    # ----------------------------
     # Features and Target
-    # ----------------------------
-
     X = data.drop("readmitted", axis=1)
     y = data["readmitted"]
 
-    # ----------------------------
-    # Train/Test Split
-    # ----------------------------
+    # Convert all columns to numeric
+    X = X.apply(pd.to_numeric, errors="coerce")
+    X = X.fillna(0)
 
+    # Train/Test Split
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
         test_size=0.20,
+        random_state=42,
+        stratify=y
+    )
+
+    # Train Model
+    model = RandomForestClassifier(
+        n_estimators=100,
         random_state=42
     )
+
+    model.fit(X_train, y_train)
+
+    # Prediction
+    y_pred = model.predict(X_test)
+
+    # Accuracy
+    accuracy = accuracy_score(y_test, y_pred)
+
+    st.success(f"Model Accuracy: {accuracy:.2%}")
+
+    # Classification Report
+    st.subheader("Classification Report")
+
+    report = classification_report(
+        y_test,
+        y_pred,
+        output_dict=True
+    )
+
+    st.dataframe(pd.DataFrame(report).transpose())
+
+    # Confusion Matrix
+    st.subheader("Confusion Matrix")
+
+    fig, ax = plt.subplots(figsize=(6, 5))
+
+    ConfusionMatrixDisplay.from_predictions(
+        y_test,
+        y_pred,
+        ax=ax
+    )
+
+    st.pyplot(fig)
+
+    # Feature Importance
+    st.subheader("Top 15 Important Features")
+
+    importance = pd.DataFrame({
+        "Feature": X.columns,
+        "Importance": model.feature_importances_
+    })
+
+    importance = importance.sort_values(
+        by="Importance",
+        ascending=False
+    ).head(15)
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    ax.barh(
+        importance["Feature"],
+        importance["Importance"],
+        color="steelblue"
+    )
+
+    ax.invert_yaxis()
+    ax.set_xlabel("Importance Score")
+    ax.set_ylabel("Feature")
+
+    st.pyplot(fig)
+
+    # Model Information
+    st.subheader("Model Details")
+
+    st.info("""
+    **Algorithm Used:** Random Forest Classifier
+
+    • Ensemble Machine Learning Model
+
+    • Suitable for Healthcare Prediction
+
+    • Handles Complex Relationships
+
+    • Provides Feature Importance
+
+    • Robust Against Overfitting
+    """)
 
     # ----------------------------
     # Train Model
