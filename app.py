@@ -20,10 +20,18 @@ Predict the risk of patient hospital readmission using healthcare data.
 - 🤖 Machine Learning Prediction
 - 📉 Visual Analytics
 """)
-uploaded_file = st.file_uploader(
-    "Upload Hospital Dataset",
-    type=["csv"]
-)
+import pandas as pd
+import streamlit as st
+
+@st.cache_data
+def load_data():
+    return pd.read_csv(
+        "https://raw.githubusercontent.com/malavneha/Hospital-Readmission-Prediction/main/diabetic_data.csv"
+    )
+
+df = load_data()
+
+st.success("✅ Dataset loaded successfully!")
 
 if uploaded_file:
 
