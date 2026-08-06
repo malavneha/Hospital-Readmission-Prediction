@@ -122,7 +122,7 @@ for col in data.columns:
 
     if data[col].dtype=="object":
 
-        data[col] = encoder.fit_transform(data[col])
+        data[col] = encoder.fit_transform(data[col].astype(str))
 
 # --------------------------------------------------
 # DASHBOARD
