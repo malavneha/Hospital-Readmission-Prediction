@@ -327,7 +327,7 @@ elif page == "EDA":
 # MACHINE LEARNING PAGE
 # ==========================================================
 
-elif page == "Machine Learning":
+    elif page == "Machine Learning":
 
     st.header("🤖 Machine Learning")
 
@@ -352,11 +352,15 @@ elif page == "Machine Learning":
 
     # Train Model
     model = RandomForestClassifier(
-        n_estimators=100,
-        random_state=42
-    )
+    n_estimators=100,
+    random_state=42
+)
 
-    model.fit(X_train, y_train)
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+accuracy = accuracy_score(y_test, y_pred)
 
     # Prediction
     y_pred = model.predict(X_test)
