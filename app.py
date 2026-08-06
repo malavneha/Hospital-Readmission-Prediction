@@ -362,12 +362,6 @@ y_pred = model.predict(X_test)
 
 accuracy = accuracy_score(y_test, y_pred)
 
-    # Prediction
-    y_pred = model.predict(X_test)
-
-    # Accuracy
-    accuracy = accuracy_score(y_test, y_pred)
-
     st.success(f"Model Accuracy: {accuracy:.2%}")
 
     # Classification Report
