@@ -31,23 +31,13 @@ df = load_data()
 
 st.success("✅ Dataset loaded successfully!")
 
-if uploaded_file:
+st.subheader("Dataset Preview")
+st.dataframe(df.head())
 
-    df = pd.read_csv(uploaded_file)
+st.subheader("Dataset Shape")
+col1, col2 = st.columns(2)
+col1.metric("Rows", df.shape[0])
+col2.metric("Columns", df.shape[1])
 
-    st.success("Dataset uploaded successfully!")
-
-    st.subheader("Dataset Preview")
-
-    st.dataframe(df.head())
-    st.subheader("Dataset Shape")
-
-    col1, col2 = st.columns(2)
-
-    col1.metric("Rows", df.shape[0])
-
-    col2.metric("Columns", df.shape[1])
-
-    st.subheader("Missing Values")
-
-    st.write(df.isnull().sum())
+st.subheader("Missing Values")
+st.write(df.isnull().sum())
