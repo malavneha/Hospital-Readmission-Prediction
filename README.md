@@ -33,3 +33,167 @@ The dataset contains anonymized patient information, including:
 - Number of Medications
 - Number of Diagnoses
 - Diabetes Medication
+## 🛠 Technologies Used
+
+- Python
+- Pandas
+- NumPy
+- Matplotlib
+- Seaborn
+- Plotly
+- Scikit-learn
+- Streamlit
+- Joblib
+
+---
+
+## 📊 Exploratory Data Analysis
+
+The project explores:
+
+- Patient demographic distribution
+- Readmission trends
+- Age-wise analysis
+- Gender and race distribution
+- Hospital stay duration
+- Medication usage
+- Laboratory procedures
+- Correlation analysis
+- Feature importance
+
+---
+
+## 🤖 Machine Learning Models
+
+Models evaluated include:
+
+- Logistic Regression
+- Decision Tree
+- Random Forest
+- XGBoost (Optional)
+- Gradient Boosting
+
+Evaluation Metrics:
+
+- Accuracy
+- Precision
+- Recall
+- F1 Score
+- ROC-AUC Score
+- Confusion Matrix
+
+---
+
+## 📈 Streamlit Dashboard Features
+
+The interactive dashboard includes:
+
+- Patient Information Input Form
+- Readmission Risk Prediction
+- Probability Score
+- Feature Selection
+- Dataset Overview
+- Visual Analytics
+- Interactive Charts
+
+---
+
+## 📁 Project Structure
+
+```
+Healthcare-Readmission-Prediction/
+│
+├── data/
+│   └── healthcare_dataset.csv
+│
+├── notebook/
+│   └── Healthcare_EDA.ipynb
+│
+├── models/
+│   └── readmission_model.pkl
+│
+├── app.py
+├── requirements.txt
+├── README.md
+└── images/
+```
+
+---
+
+## 🚀 Installation
+
+Clone the repository
+
+```bash
+git clone https://github.com/yourusername/Healthcare-Readmission-Prediction.git
+```
+
+Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the Streamlit application
+
+```bash
+streamlit run app.py
+```
+
+---
+
+## 📊 Results
+
+- Performed comprehensive data preprocessing.
+- Reduced missing values through appropriate imputation.
+- Trained and evaluated multiple classification models.
+- Selected the best-performing model based on evaluation metrics.
+- Built a user-friendly Streamlit dashboard for real-time predictions.
+
+---
+
+## 💡 Future Improvements
+
+- Hyperparameter tuning
+- Deep Learning models
+- Explainable AI using SHAP/LIME
+- Cloud deployment
+- Integration with Electronic Health Records (EHR)
+- Real-time hospital monitoring dashboard
+
+---
+
+## 📷 Dashboard Preview
+
+Add screenshots of your Streamlit dashboard here.
+
+Example:
+
+- Home Page
+- Data Analysis
+- Prediction Page
+- Model Performance
+
+---
+
+## 📚 Key Learnings
+
+- Data preprocessing techniques
+- Feature engineering
+- Classification algorithms
+- Model evaluation
+- Healthcare analytics
+- Streamlit deployment
+- Interactive dashboard development
+
+---
+
+## 👩‍💻 Author
+
+**Neha Malav**
+
+Healthcare Data Analytics | Machine Learning | Data Science | Python | Streamlit
+
+---
+
+## ⭐ If you found this project helpful, consider giving it a Star!
