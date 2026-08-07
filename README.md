@@ -1,3 +1,10 @@
+streamlit
+pandas
+numpy
+matplotlib
+scikit-learn
+seaborn
+
 # 🏥 Healthcare Readmission Prediction
 
 ## 📌 Project Overview
