@@ -16,11 +16,11 @@ The project includes data preprocessing, exploratory data analysis (EDA), featur
 🔗▶️ live demo 
 https://hospital-readmission-prediction-fczihjgbagbex2f4afjfme.streamlit.app/
 
-🔗📳https://github.com/malavneha/hospital-readmission-prediction/blob/main/app.py
+🔗📳https://github.com/malavneha
 ---
 
 🔗👩‍🎓linkdin
-https://www.linkedin.com/in/dr-neha-malav-743a25332?utm_source=share_via&utm_content=profile&utm_medium=member_android
+https://www.linkedin.com/in/dr-neha-malav-743a25332
 
 ## 🎯 Objectives
 
