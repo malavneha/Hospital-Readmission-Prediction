@@ -1,0 +1,35 @@
+name: Research model training
+
+on:
+  workflow_dispatch:
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Train and evaluate
+        run: python train_model.py
+
+      - name: Upload research results
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-results
+          path: |
+            results/cross_validation_results.csv
+            results/final_test_results.json
+            models/model_metadata.json
+            models/readmission_model.joblib
