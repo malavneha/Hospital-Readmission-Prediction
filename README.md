@@ -163,7 +163,7 @@ machine learning approach, experimental results, and conclusions.
 
 ### 📑 Preprint
 
-📄 [Read the Research Paper](research/Hospital_Readmission_Research_Paper.pdf)
+📄 [Read the Research Paper](research/Hospital_Readmission_Preprint_FINAL-4.pdf)
 
 🔗 **DOI:** [10.5281/zenodo.21855969](https://doi.org/10.5281/zenodo.21855969)
 ### 📚 Citation
