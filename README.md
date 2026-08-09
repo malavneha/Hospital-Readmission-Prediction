@@ -155,13 +155,24 @@ streamlit run app.py
 ```
 
 ---
-# 📄 Research Paper
+## 📄 Research Paper
 
-A detailed research paper describing the methodology, data preprocessing, exploratory data analysis, machine learning model, results, and conclusions is available in the `research` folder.
+This project is accompanied by a research paper presenting the
+methodology, data preprocessing, exploratory data analysis,
+machine learning approach, experimental results, and conclusions.
 
-**Research Paper:**
-- 📘 Hospital_Readmission_Research_Paper.pdf
-- 📝 Hospital_Readmission_Research_Paper.docx
+### 📑 Preprint
+
+📄 [Read the Research Paper](research/Hospital_Readmission_Research_Paper.pdf)
+
+🔗 **DOI:** [10.5281/zenodo.21855969](https://doi.org/10.5281/zenodo.21855969)
+### 📚 Citation
+
+If you use this research or repository, please cite:
+
+> Malav, Neha. *Hospital Readmission Prediction: A Machine Learning
+> Approach*. Zenodo. https://doi.org/10.5281/zenodo.21855969
+
 
 ## 📊 Results
 
