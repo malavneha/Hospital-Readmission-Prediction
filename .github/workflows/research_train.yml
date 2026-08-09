@@ -38,6 +38,5 @@ jobs:
         with:
           name: research-results
           path: |
-            path: |
-              models/readmission_model.joblib
-              models/metrics.json
+             models/readmission_model.joblib
+             models/metrics.json
