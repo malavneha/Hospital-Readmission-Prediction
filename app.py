@@ -239,3 +239,5 @@ elif page == "About":
         "validated, externally validated, calibrated for clinical deployment, or evaluated "
         "for clinical impact or fairness."
     )
+
+        ### 👩‍💻 Developed by Dr. Neha Malav
