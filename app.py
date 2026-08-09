@@ -42,7 +42,7 @@ def load_model():
     if not MODEL_PATH.exists():
         return None
    artifact = joblib.load(MODEL_PATH)
-return artifact["model"] if isinstance(artifact, dict) else artifact 
+   return artifact["model"] if isinstance(artifact, dict) else artifact 
 
 df = load_data()
 model = load_model()
