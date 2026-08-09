@@ -244,8 +244,7 @@ def main():
         "dataset_rows": int(len(df)),
         "dataset_columns": int(df.shape[1]),
     }
-    joblib.dump(artifact, MODEL_PATH)
-
+    joblib.dump(artifact, MODEL_PATH, compress=5)
     with open(os.path.join(MODEL_DIR, "metrics.json"), "w", encoding="utf-8") as f:
         json.dump(
             {
