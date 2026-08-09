@@ -1,682 +1,240 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
+import json
+from pathlib import Path
 
+import joblib
 import matplotlib.pyplot as plt
-import seaborn as sns
-
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
+import numpy as np
+import pandas as pd
+import streamlit as st
 from sklearn.metrics import (
-    accuracy_score,
+    ConfusionMatrixDisplay,
     confusion_matrix,
-    classification_report,
-    ConfusionMatrixDisplay
+    roc_curve,
+    precision_recall_curve,
 )
 
-from sklearn.ensemble import RandomForestClassifier
-
-# --------------------------------------------------
-# PAGE CONFIG
-# --------------------------------------------------
+ROOT = Path(__file__).resolve().parent
+DATA_PATH = ROOT / "diabetic_data.csv"
+MODEL_PATH = ROOT / "models" / "readmission_model.joblib"
+RESULTS_PATH = ROOT / "results" / "final_test_results.json"
+CV_PATH = ROOT / "results" / "cross_validation_results.csv"
 
 st.set_page_config(
     page_title="Hospital Readmission Prediction",
     page_icon="🏥",
-    layout="wide"
+    layout="wide",
 )
 
-# --------------------------------------------------
-# TITLE
-# --------------------------------------------------
+st.title("🏥 Hospital Readmission Prediction")
+st.caption("Research prototype • UCI Diabetes 130-US Hospitals dataset")
 
-st.title("🏥 Hospital Readmission Prediction Dashboard")
-
-st.markdown("""
-### AI Powered Healthcare Analytics
-
-This dashboard predicts hospital readmission risk using
-Machine Learning and provides interactive healthcare analytics.
-""")
-
-# --------------------------------------------------
-# SIDEBAR
-# --------------------------------------------------
-
-st.sidebar.title("Navigation")
-
-page = st.sidebar.radio(
-    "Select Module",
-    [
-        "Dashboard",
-        "Dataset",
-        "EDA",
-        "Machine Learning",
-        "Prediction",
-        "About"
-    ]
+st.warning(
+    "Research-use prototype only. This application is not a clinically validated "
+    "decision-support system and should not be used for patient-care decisions."
 )
-
-# --------------------------------------------------
-# LOAD DATA
-# --------------------------------------------------
 
 @st.cache_data
 def load_data():
-    return pd.read_csv("diabetic_data.csv")
+    return pd.read_csv(DATA_PATH)
+
+@st.cache_resource
+def load_model():
+    if not MODEL_PATH.exists():
+        return None
+    return joblib.load(MODEL_PATH)
 
 df = load_data()
+model = load_model()
 
-st.sidebar.success("Dataset Loaded")
+df_clean = df.copy()
+df_clean.replace("?", np.nan, inplace=True)
 
-# --------------------------------------------------
-# DATA CLEANING
-# --------------------------------------------------
-
-data = df.copy()
-
-data.replace("?", np.nan, inplace=True)
-
-# Drop IDs
-
-drop_cols = [
-    "encounter_id",
-    "patient_nbr"
-]
-
-for col in drop_cols:
-    if col in data.columns:
-        data.drop(col, axis=1, inplace=True)
-
-# Fill missing values
-
-for col in data.columns:
-    if pd.api.types.is_numeric_dtype(data[col]):
-        data[col] = data[col].fillna(data[col].median())
-    else:
-        mode = data[col].mode()
-        if not mode.empty:
-            data[col] = data[col].fillna(mode[0])
-        else:
-            data[col] = data[col].fillna("Unknown")
-
-    
-
-    
-
-# Encode target
-
-data["readmitted"] = data["readmitted"].replace({
-    "NO":0,
-    ">30":1,
-    "<30":1
-})
-
-# --------------------------------------------------
-# LABEL ENCODING
-# --------------------------------------------------
-
-encoder = LabelEncoder()
-
-for col in data.columns:
-
-    if data[col].dtype=="object":
-
-        data[col] = encoder.fit_transform(data[col].astype(str))
-
-# --------------------------------------------------
-# DASHBOARD
-# --------------------------------------------------
-
-if page=="Dashboard":
-
-    st.header("📊 Dashboard")
-
-    c1,c2,c3,c4 = st.columns(4)
-
-    c1.metric(
-        "Patients",
-        len(df)
-    )
-
-    c2.metric(
-        "Columns",
-        df.shape[1]
-    )
-
-    c3.metric(
-        "Readmitted",
-        (data["readmitted"]==1).sum()
-    )
-
-    c4.metric(
-        "No Readmission",
-        (data["readmitted"]==0).sum()
-    )
-
-    st.divider()
-
-    st.subheader("Dataset Preview")
-
-    st.dataframe(df.head(10))
-
-    st.subheader("Dataset Shape")
-
-    st.write(df.shape)
-
-    st.subheader("Missing Values")
-
-    st.dataframe(
-        df.isnull().sum().to_frame("Missing Values")
-    )
-# ==========================================================
-# EDA PAGE
-# ==========================================================
-
-elif page == "EDA":
-
-    st.header("📈 Exploratory Data Analysis")
-
-    # ----------------------------
-    # Readmission Distribution
-    # ----------------------------
-
-    st.subheader("Readmission Distribution")
-
-    fig, ax = plt.subplots(figsize=(7,4))
-
-    df["readmitted"].value_counts().plot(
-        kind="bar",
-        ax=ax
-    )
-
-    ax.set_xlabel("Readmission Status")
-    ax.set_ylabel("Patients")
-
-    st.pyplot(fig)
-
-    # ----------------------------
-    # Gender Distribution
-    # ----------------------------
-
-    st.subheader("Gender Distribution")
-
-    fig, ax = plt.subplots(figsize=(7,4))
-
-    df["gender"].value_counts().plot(
-        kind="bar",
-        ax=ax
-    )
-
-    ax.set_xlabel("Gender")
-    ax.set_ylabel("Patients")
-
-    st.pyplot(fig)
-
-    # ----------------------------
-    # Race Distribution
-    # ----------------------------
-
-    st.subheader("Race Distribution")
-
-    fig, ax = plt.subplots(figsize=(8,4))
-
-    df["race"].value_counts().plot(
-        kind="bar",
-        ax=ax
-    )
-
-    ax.set_xlabel("Race")
-    ax.set_ylabel("Patients")
-
-    st.pyplot(fig)
-
-    # ----------------------------
-    # Age Distribution
-    # ----------------------------
-
-    st.subheader("Age Distribution")
-
-    fig, ax = plt.subplots(figsize=(10,4))
-
-    df["age"].value_counts().sort_index().plot(
-        kind="bar",
-        ax=ax
-    )
-
-    ax.set_xlabel("Age Group")
-    ax.set_ylabel("Patients")
-
-    st.pyplot(fig)
-
-    # ----------------------------
-    # Time in Hospital
-    # ----------------------------
-
-    st.subheader("Time in Hospital")
-
-    fig, ax = plt.subplots(figsize=(8,4))
-
-    ax.hist(
-        df["time_in_hospital"],
-        bins=15
-    )
-
-    ax.set_xlabel("Days")
-    ax.set_ylabel("Patients")
-
-    st.pyplot(fig)
-
-    # ----------------------------
-    # Number of Diagnoses
-    # ----------------------------
-
-    st.subheader("Number of Diagnoses")
-
-    fig, ax = plt.subplots(figsize=(8,4))
-
-    ax.hist(
-        df["number_diagnoses"],
-        bins=15
-    )
-
-    ax.set_xlabel("Diagnoses")
-    ax.set_ylabel("Patients")
-
-    st.pyplot(fig)
-
-    # ----------------------------
-    # Correlation Heatmap
-    # ----------------------------
-
-    st.subheader("Correlation Heatmap")
-
-    numeric = data.select_dtypes(include=np.number)
-
-    corr = numeric.corr()
-
-    fig, ax = plt.subplots(figsize=(12,8))
-
-    sns.heatmap(
-        corr,
-        cmap="coolwarm",
-        ax=ax
-    )
-
-    st.pyplot(fig)
-
-    # ----------------------------
-    # Missing Values
-    # ----------------------------
-
-    st.subheader("Missing Values")
-
-    missing = df.isnull().sum()
-
-    fig, ax = plt.subplots(figsize=(12,5))
-
-    missing.plot(
-        kind="bar",
-        ax=ax
-    )
-    st.pyplot(fig)
-
-# ==========================================================
-# MACHINE LEARNING PAGE
-# ==========================================================
-
-elif page == "Machine Learning":
-
-
-    
-    st.header("🤖 Machine Learning")
-
-    st.write("Training Random Forest Classifier...")
-
-    # Features and Target
-    X = data.drop("readmitted", axis=1)
-    y = data["readmitted"]
-
-    # Convert all columns to numeric
-    X = X.apply(pd.to_numeric, errors="coerce")
-    X = X.fillna(0)
-
-    # Train/Test Split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=0.20,
-        random_state=42,
-        stratify=y
-    )
-
-    # Train Model
-    model = RandomForestClassifier(
-    n_estimators=100,
-    random_state=42
+page = st.sidebar.radio(
+    "Navigation",
+    ["Dashboard", "Dataset", "EDA", "Model Performance", "Prediction", "About"]
 )
 
-    model.fit(X_train, y_train)
+if page == "Dashboard":
+    st.header("Dashboard")
+    a, b, c, d = st.columns(4)
+    a.metric("Encounters", f"{len(df):,}")
+    b.metric("Variables", f"{df.shape[1]:,}")
+    c.metric("Readmitted", f"{(df['readmitted'].isin(['>30','<30'])).sum():,}")
+    d.metric("No readmission", f"{(df['readmitted'] == 'NO').sum():,}")
 
-    y_pred = model.predict(X_test)
+    st.subheader("Dataset preview")
+    st.dataframe(df.head(10), use_container_width=True)
 
-    accuracy = accuracy_score(y_test, y_pred)
+    st.subheader("Missing values")
+    missing = df_clean.isna().sum().sort_values(ascending=False)
+    st.dataframe(missing.to_frame("Missing values"), use_container_width=True)
 
-    st.success(f"Model Accuracy: {accuracy:.2%}")
-
-    # Classification Report
-    st.subheader("Classification Report")
-
-    report = classification_report(
-        y_test,
-        y_pred,
-        output_dict=True
+elif page == "Dataset":
+    st.header("Dataset")
+    st.write(
+        "The dataset contains hospital encounters from the UCI Diabetes 130-US Hospitals "
+        "benchmark. The target is transformed to binary readmission: NO = 0; >30 or <30 = 1."
     )
+    st.dataframe(df, use_container_width=True, height=500)
 
-    st.dataframe(pd.DataFrame(report).transpose())
+elif page == "EDA":
+    st.header("Exploratory Data Analysis")
 
-    # Confusion Matrix
-    st.subheader("Confusion Matrix")
+    st.subheader("Binary readmission distribution")
+    target = df["readmitted"].map({"NO": "No readmission", ">30": "Readmitted", "<30": "Readmitted"})
+    fig, ax = plt.subplots(figsize=(7, 4))
+    target.value_counts().plot(kind="bar", ax=ax)
+    ax.set_xlabel("")
+    ax.set_ylabel("Encounters")
+    st.pyplot(fig, clear_figure=True)
 
-    fig, ax = plt.subplots(figsize=(6, 5))
+    st.subheader("Age distribution")
+    fig, ax = plt.subplots(figsize=(9, 4))
+    df["age"].value_counts().sort_index().plot(kind="bar", ax=ax)
+    ax.set_xlabel("Age group")
+    ax.set_ylabel("Encounters")
+    st.pyplot(fig, clear_figure=True)
 
-    ConfusionMatrixDisplay.from_predictions(
-        y_test,
-        y_pred,
-        ax=ax
-    )
+    st.subheader("Time in hospital")
+    fig, ax = plt.subplots(figsize=(8, 4))
+    df["time_in_hospital"].plot(kind="hist", bins=15, ax=ax)
+    ax.set_xlabel("Days")
+    ax.set_ylabel("Encounters")
+    st.pyplot(fig, clear_figure=True)
 
-    st.pyplot(fig)
+    st.subheader("Missingness")
+    missing = df_clean.isna().sum().sort_values(ascending=False).head(20)
+    fig, ax = plt.subplots(figsize=(10, 5))
+    missing.sort_values().plot(kind="barh", ax=ax)
+    ax.set_xlabel("Missing values")
+    st.pyplot(fig, clear_figure=True)
 
-    # Feature Importance
-    st.subheader("Top 15 Important Features")
+elif page == "Model Performance":
+    st.header("Model Performance")
 
-    importance = pd.DataFrame({
-        "Feature": X.columns,
-        "Importance": model.feature_importances_
-    })
+    if not RESULTS_PATH.exists() or not CV_PATH.exists():
+        st.info(
+            "The research model has not been trained in this repository yet. "
+            "Run train_model.py once to create the model and results files."
+        )
+    else:
+        results = json.loads(RESULTS_PATH.read_text(encoding="utf-8"))
+        cv = pd.read_csv(CV_PATH)
 
-    importance = importance.sort_values(
-        by="Importance",
-        ascending=False
-    ).head(15)
+        st.success(f"Selected model: {results['selected_model']}")
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+        m = results["metrics"]
+        cols = st.columns(6)
+        labels = [
+            ("Accuracy", m["accuracy"]),
+            ("Precision", m["precision"]),
+            ("Recall", m["recall"]),
+            ("F1", m["f1"]),
+            ("ROC-AUC", m["roc_auc"]),
+            ("PR-AUC", m["pr_auc"]),
+        ]
+        for col, (label, value) in zip(cols, labels):
+            col.metric(label, f"{value:.3f}")
 
-    ax.barh(
-        importance["Feature"],
-        importance["Importance"],
-        color="steelblue"
-    )
+        st.subheader("Cross-validation model comparison")
+        st.dataframe(cv, use_container_width=True)
 
-    ax.invert_yaxis()
-    ax.set_xlabel("Importance Score")
-    ax.set_ylabel("Feature")
+        st.subheader("Confusion matrix")
+        cm = np.array(results["confusion_matrix"])
+        fig, ax = plt.subplots(figsize=(5, 4))
+        ConfusionMatrixDisplay(
+            confusion_matrix=cm,
+            display_labels=["No readmission", "Readmitted"],
+        ).plot(ax=ax, values_format="d", colorbar=False)
+        st.pyplot(fig, clear_figure=True)
 
-    st.pyplot(fig)
-
-    # Model Information
-    st.subheader("Model Details")
-
-    st.info("""
-    **Algorithm Used:** Random Forest Classifier
-
-    • Ensemble Machine Learning Model
-
-    • Suitable for Healthcare Prediction
-
-    • Handles Complex Relationships
-
-    • Provides Feature Importance
-
-    • Robust Against Overfitting
-    """)
-
-    # ----------------------------
-    # Train Model
-    # ----------------------------
-
-    model = RandomForestClassifier(
-        n_estimators=100,
-        random_state=42
-    )
-    X = X.apply(pd.to_numeric, errors="coerce")
-    X = X.fillna(0)
-
-    model.fit(X_train, y_train)
-
-    y_pred = model.predict(X_test)
-
-    # ----------------------------
-    # Accuracy
-    # ----------------------------
-
-    accuracy = accuracy_score(y_test, y_pred)
-
-    st.success(f"Model Accuracy: {accuracy:.2%}")
-
-    # ----------------------------
-    # Classification Report
-    # ----------------------------
-
-    st.subheader("Classification Report")
-
-    report = classification_report(
-        y_test,
-        y_pred,
-        output_dict=True
-    )
-
-    st.dataframe(pd.DataFrame(report).transpose())
-
-    # ----------------------------
-    # Confusion Matrix
-    # ----------------------------
-
-    st.subheader("Confusion Matrix")
-
-    fig, ax = plt.subplots(figsize=(6,5))
-
-    ConfusionMatrixDisplay.from_predictions(
-        y_test,
-        y_pred,
-        ax=ax
-    )
-
-    st.pyplot(fig)
-
-    # ----------------------------
-    # Feature Importance
-    # ----------------------------
-
-    st.subheader("Top 15 Important Features")
-
-    importance = pd.DataFrame({
-        "Feature": X.columns,
-        "Importance": model.feature_importances_
-    })
-
-    importance = importance.sort_values(
-        "Importance",
-        ascending=False
-    ).head(15)
-
-    fig, ax = plt.subplots(figsize=(10,6))
-
-    ax.barh(
-        importance["Feature"],
-        importance["Importance"]
-    )
-
-    ax.set_xlabel("Importance")
-
-    plt.gca().invert_yaxis()
-
-    st.pyplot(fig)
-
-    # ----------------------------
-    # Model Information
-    # ----------------------------
-
-    st.subheader("Model Details")
-
-    st.info("""
-    **Algorithm Used:** Random Forest Classifier
-
-    • Ensemble Machine Learning Model
-
-    • Suitable for Healthcare Prediction
-
-    • Handles Complex Relationships
-
-    • Provides Feature Importance
-
-    • Robust Against Overfitting
-    """)
-    # ==========================================================
-# PREDICTION PAGE
-# ==========================================================
+        st.subheader("Evaluation design")
+        st.write(
+            f"Patient-level holdout: {results['test_rows']:,} test encounters across "
+            f"{results['test_unique_patients']:,} unique patients. "
+            f"Patient overlap between training and test: {results['patient_overlap']}."
+        )
 
 elif page == "Prediction":
+    st.header("🩺 Readmission Prediction")
 
-    st.header("🩺 Hospital Readmission Risk Prediction")
-
-    st.write("Enter patient details below to estimate readmission risk.")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        age = st.slider(
-            "Age",
-            1,
-            100,
-            50
+    if model is None:
+        st.info(
+            "The trained research model is not available yet. Run train_model.py and "
+            "place models/readmission_model.joblib in the repository."
+        )
+    else:
+        st.write(
+            "Enter encounter-level information. The form is intended to demonstrate "
+            "the trained model interface; it is not a validated clinical calculator."
         )
 
-        time_in_hospital = st.slider(
-            "Time in Hospital (days)",
-            1,
-            14,
-            5
+        # Use a subset of common model inputs. Unspecified fields are filled by the
+        # fitted pipeline's imputers. This is a transparent interface, not a full EHR.
+        age = st.selectbox(
+            "Age group",
+            sorted(df["age"].dropna().unique().tolist()),
+            index=min(7, len(sorted(df["age"].dropna().unique().tolist())) - 1),
         )
+        gender = st.selectbox("Gender", sorted(df["gender"].dropna().unique().tolist()))
+        time_in_hospital = st.slider("Time in hospital (days)", 1, 14, 4)
+        num_lab_procedures = st.slider("Number of laboratory procedures", 0, 150, 40)
+        num_medications = st.slider("Number of medications", 0, 100, 15)
+        number_diagnoses = st.slider("Number of diagnoses", 1, 16, 8)
+        number_inpatient = st.slider("Previous inpatient visits", 0, 20, 0)
+        number_emergency = st.slider("Previous emergency visits", 0, 20, 0)
+        number_outpatient = st.slider("Previous outpatient visits", 0, 40, 0)
 
-        num_lab = st.slider(
-            "Lab Procedures",
-            1,
-            150,
-            40
-        )
+        if st.button("Predict readmission risk", type="primary"):
+            # Build a full row with dataset-compatible columns.
+            row = {c: np.nan for c in df.columns if c not in ["readmitted", "patient_nbr", "encounter_id"]}
+            row.update({
+                "age": age,
+                "gender": gender,
+                "time_in_hospital": time_in_hospital,
+                "num_lab_procedures": num_lab_procedures,
+                "num_medications": num_medications,
+                "number_diagnoses": number_diagnoses,
+                "number_inpatient": number_inpatient,
+                "number_emergency": number_emergency,
+                "number_outpatient": number_outpatient,
+            })
+            input_df = pd.DataFrame([row])
 
-        medications = st.slider(
-            "Number of Medications",
-            1,
-            80,
-            15
-        )
+            probability = float(model.predict_proba(input_df)[0, 1])
+            prediction = int(probability >= 0.5)
 
-    with col2:
+            st.metric("Model-estimated probability", f"{probability:.1%}")
+            if prediction:
+                st.error("Model classification: higher predicted readmission risk")
+            else:
+                st.success("Model classification: lower predicted readmission risk")
 
-        diagnoses = st.slider(
-            "Number of Diagnoses",
-            1,
-            16,
-            5
-        )
-
-        emergency = st.slider(
-            "Emergency Visits",
-            0,
-            20,
-            1
-        )
-
-        inpatient = st.slider(
-            "Inpatient Visits",
-            0,
-            20,
-            1
-        )
-
-        outpatient = st.slider(
-            "Outpatient Visits",
-            0,
-            20,
-            2
-        )
-    if st.button("🔮 Predict Readmission Risk"):
-        risk_score = (
-            age * 0.15 +
-            time_in_hospital * 4 +
-            medications * 0.6 +
-            diagnoses * 2 +
-            emergency * 5 +
-            inpatient * 5 +
-            outpatient * 2 +
-            num_lab * 0.05
-        )
-
-        probability = min(risk_score / 100, 1.0)
-
-        if probability >= 0.60:
-            st.error("🔴 High Risk of Readmission")
-        elif probability >= 0.35:
-            st.warning("🟠 Moderate Risk of Readmission")
-        else:
-            st.success("🟢 Low Risk of Readmission")
-
-        st.metric(
-            "Estimated Readmission Risk",
-            f"{probability:.1%}",
-            "High Risk" if probability > 0.5 else "Low Risk"
-        )
-
-
-
-            # ==========================================================
-# ABOUT PAGE
-# ==========================================================
+            st.caption(
+                "This probability comes from the trained research model. It is not a "
+                "clinically calibrated risk score."
+            )
 
 elif page == "About":
-
-    st.header("👩‍⚕️ About This Project")
-
-    st.markdown("""
-## Hospital Readmission Prediction Dashboard
-
-This project demonstrates how Artificial Intelligence
-and Machine Learning can assist healthcare professionals
-in identifying patients at risk of hospital readmission.
-
-### Technologies Used
-
-- Python
-- Streamlit
-- Pandas
-- NumPy
-- Matplotlib
-- Seaborn
-- Scikit-learn
-
-### Features
-
-- Healthcare Analytics
-- Exploratory Data Analysis
-- Machine Learning
-- Readmission Risk Prediction
-- Interactive Dashboard
-
----
-
-### Developer
-
-**Dr. Neha Malav**
-
-MBBS | Healthcare Analytics | AI in Healthcare
-
-GitHub:
-https://github.com/malavneha
-""")
-
-    st.success("Thank you for exploring this project!")
-            
+    st.header("About this project")
+    st.write(
+        "This project demonstrates an end-to-end machine-learning workflow for "
+        "hospital readmission prediction using the UCI Diabetes 130-US Hospitals dataset."
+    )
+    st.subheader("Research design")
+    st.markdown(
+        """
+        - Patient-level train/test separation
+        - Leakage-safe preprocessing with a scikit-learn Pipeline
+        - One-hot encoding for categorical variables
+        - Grouped cross-validation for model comparison
+        - Primary model-selection metric: PR-AUC
+        - Final evaluation on an untouched patient-level test set
+        """
+    )
+    st.subheader("Responsible use")
+    st.write(
+        "The project is a research and educational prototype. It has not been prospectively "
+        "validated, externally validated, calibrated for clinical deployment, or evaluated "
+        "for clinical impact or fairness."
+    )
