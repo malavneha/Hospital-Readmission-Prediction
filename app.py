@@ -1,4 +1,4 @@
-import json
+8import json
 from pathlib import Path
 
 import joblib
@@ -39,9 +39,11 @@ def load_data():
 
 @st.cache_resource
 def load_model():
-    if not MODEL_PATH.exists():
+    if not
+MODEL_PATH.exists():
         return None
-    artifact = joblib.load(MODEL_PATH)
+    artifact = 
+joblib.load(MODEL_PATH)
     return artifact["model"] 
 if isinstance(artifact, dict) 
 else artifact 
