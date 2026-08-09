@@ -222,7 +222,7 @@ Example:
 
 ## 👩‍💻 Author
 
-**Neha Malav**
+** Dr Neha Malav**
 
 Healthcare Data Analytics | Machine Learning | Data Science | Python | Streamlit
 
